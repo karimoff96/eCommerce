@@ -1,0 +1,10 @@
+asgiref==3.6.0
+autopep8==2.0.2
+Django==4.2
+Pillow==9.5.0
+pycodestyle==2.10.0
+sqlparse==0.4.3
+tomli==2.0.1
+tzdata==2023.3
+environs==9.5.0
+PaycomUz==3.0

@@ -116,7 +116,12 @@ def add_to_cart(request):
     user = request.user
     product_id = request.GET.get('prod_id')
     product = Product.objects.get(id=product_id)
-    Cart(user=user, product=product).save()
+    cart = Cart.objects.filter(user=user, product_id=product_id)
+    if len(cart)!=0:
+        cart[0].quantity += 1
+        cart[0].save()
+    else:
+        Cart(user=user, product=product).save()
     return redirect('/cart')
 
 
