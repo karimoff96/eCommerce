@@ -53,14 +53,14 @@
             <a class="nav-link text-white" href="{% url 'contact' %}">Contact us</a>
           </li>
         </ul>
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">Search</button>
+        <form class="d-flex" role="search" action="/search">
+          <input class="form-control me-2" type="search" placeholder="Search" name="search" aria-label="Search">
+          <button class="btn btn-outline-dark" type="submit">Search</button>
         </form>
       </div>
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item dropdown mx-2">
-          <a class="nav-link dropdown-toggle text-white" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Dkarimoff</a>
+          <a class="nav-link dropdown-toggle text-white" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"><span style="text-transform:uppercase">{{request.user}}</span></a>
           <ul class="dropdown-menu" aria-labelledby="profileDropdown">
             <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
             <li><a class="dropdown-item" href="#">Orders</a></li>
@@ -72,7 +72,7 @@
           <a href="{% url 'showcart' %}" class="nav-link text-white"><span class="badge bg-danger">{%if totalitem > 0%} {{totalitem}} {% endif %}</span> Cart</a>
         </li>
         <li class="naw-item mx-2">
-          <a href="#" class="nav-link text-white"> Wishlist 4</a>
+          <a href="{% url 'showwishlist' %}" class="nav-link text-white"><span class="badge bg-danger">{% if wishitem > 0 %} {{wishitem}} {% endif %}</span><i class="fa fa-heart"></i></a>
         </li>
         {% else %}
         <li class="naw-item mx-2">

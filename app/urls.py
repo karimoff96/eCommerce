@@ -4,6 +4,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_view
 from . forms import LoginForm, MyPasswordResetForm, MyPasswordChangeForm, MySetPasswordForm
+from django.contrib import admin
+
+
 urlpatterns = [
     path('', views.home),
     path('about/', views.about, name='about'),
@@ -24,10 +27,16 @@ urlpatterns = [
     path('checkout/', views.checkout.as_view(), name='checkout'),
     path('paymentdone/', views.payment_done, name='paymentdone'),
     path('orders/', views.orders, name='orders'),
+    path('search/', views.search, name='search'),
+    path('wishlist/', views.show_wishlist, name='showwishlist'),
+
 
     path('pluscart/', views.plus_cart),
     path('minuscart/', views.minus_cart),
     path('removecart/', views.remove_cart),
+    path('pluswishlist/', views.plus_wishlist),
+    path('minuswishlist/', views.minus_wishlist),
+
 
 
     path('registration/', views.CustomerRegistrationView.as_view(),
@@ -52,3 +61,9 @@ urlpatterns = [
 
 
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+admin.site.site_header = "eCommerce"
+admin.site.site_title = "eCommerce"
+admin.site.site_index_title = "welcome to eCommerce project"
+
+
