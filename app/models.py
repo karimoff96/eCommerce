@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from clickuz import ClickUz
 # Create your models here.
 CATEGORY_CHOICES = (
     ('CR', 'Curd'),
@@ -88,6 +89,15 @@ class OrderPlaced(models.Model):
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending')
     payment = models.ForeignKey(Payment, on_delete=models.CASCADE, default="")
 
+    def __str__(self):
+        return f'Order {self.id} - {self.payment.amount} - {self.customer.mobile}'
+
+    def change_status(self, payed):
+        self.payed = payed
+
+    def get_payment_url(self, return_url: str) -> str:
+        return ClickUz.generate_url(self.id, self.payment.amount, return_url)
+    
     @property
     def total_cost(self):
         return self.quantity * self.product.discounted_price

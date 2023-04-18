@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'clickuz',
     
     'app',
 ]
@@ -127,3 +129,10 @@ LOGIN_REDIRECT_URL = '/profile/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+CLICK_SETTINGS = {
+    'service_id': '26445',
+    'merchant_id': '30136',
+    'secret_key': 'gVDeRacmDun',
+}

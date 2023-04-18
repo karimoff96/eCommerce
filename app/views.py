@@ -4,6 +4,8 @@ from django.db.models import Count
 from django.views import View
 from . models import Product, Customer, Cart, Payment, OrderPlaced, Wishlist
 from . forms import CustomerRegistrationForm, CustomerProfileForm
+from clickuz.views import ClickUzMerchantAPIView
+from clickuz import ClickUz
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
