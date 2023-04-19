@@ -1,17 +1,14 @@
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
-from django.db.models import Count
 from django.views import View
-from . models import Product, Customer, Cart, Payment, OrderPlaced, Wishlist
+from . models import Product, Customer, Cart, Wishlist, Order
 from . forms import CustomerRegistrationForm, CustomerProfileForm
 from clickuz.views import ClickUzMerchantAPIView
 from clickuz import ClickUz
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.db.models import Q
-# Create your views here.
 
 
 @login_required
@@ -75,11 +72,8 @@ class CategoryTitle(View):
 class ProductDetail(View):
     def get(self, request, pk):
         product = Product.objects.get(pk=pk)
-        # print(product=product)
         wishlist = Wishlist.objects.filter(
             Q(product=product) & Q(user=request.user))
-        # print(wishlist, '*++**+*+*+*+**+*++*+*+*')
-
         totalitem = 0
         wishitem = 0
         if request.user.is_authenticated:
@@ -232,6 +226,23 @@ def show_wishlist(request):
     return render(request, 'app/wishlist.html', locals())
 
 
+class OrderCheckAndPayment(ClickUz):
+    def check_order(self, order_id: str, amount: str):
+        order = Order.objects.filter(pk=order_id).first()
+        if order is None:
+            return self.ORDER_NOT_FOUND
+        if order.amount != amount:
+            return self.INVALID_AMOUNT
+        return self.ORDER_FOUND
+    def successfully_payment(self, order_id: str, transaction: object):
+        order = Order.objects.get(pk=order_id)
+        order.change_status(True)
+
+
+class TestView(ClickUzMerchantAPIView):
+    VALIDATE_CLASS = OrderCheckAndPayment
+
+
 class checkout(View):
     def get(self, request):
         totalitem = 0
@@ -248,21 +259,18 @@ class checkout(View):
             famount = famount+value
         totalamount = famount+40
         payamount = int(totalamount*100)
-        # client
-        data = {'amount': payamount, 'currency': "USD",
-                'receipt': 'order_rcptid_12'}
-        # pament_response = client.order.create(data=data)
-        # order_id = payment_response['id']
-        # order_status = payment_response['status']
-        # if order_status == 'create':
-        #     payment = Payment(
-        #         user=user,
-        #         amount=totalamount,
-        #         order_id = order_id,
-        #         order_status=order_status,
-        #     )
-        #     payment.save()
         return render(request, 'app/checkout.html', locals())
+
+    def post(self, request):
+        print(request)
+        customer = Customer.objects.filter(
+            id=request.POST.get('custid')).first()
+        product = Product.objects.first()
+        customer = Customer.objects.first()
+        order = Order.objects.create(
+            user=request.user, customer=customer, amount=request.POST.get('totamount'), product=product)
+        url = order.get_payment_url(request.POST.get('curr_url'))
+        return redirect(url)
 
 
 @login_required
@@ -285,15 +293,27 @@ def payment_done(request):
     return redirect('orders')
 
 
+
+
+
+
+
 @login_required
 def orders(request):
     totalitem = 0
     wishitem = 0
+    add = Customer.objects.filter(user=request.user)[0]
     if request.user.is_authenticated:
         totalitem = len(Cart.objects.filter(user=request.user))
         wishitem = len(Wishlist.objects.filter(user=request.user))
-    order_placed = OrderPlaced.objects.filter(user=request.user)
+    order = Order.objects.filter(user=request.user)
     return render(request, 'app/orders.html', locals())
+
+
+
+
+
+
 
 
 def plus_cart(request):

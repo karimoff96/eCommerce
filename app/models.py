@@ -22,6 +22,14 @@ STATE_CHOICES=(
     ('Khorazm', 'Khorezm'),
     ('Nukus', 'Nukus'),
 )
+STATUS_CHOICES = {
+    ('Accepted', 'Accepted'),
+    ('Packed', 'Packed'),
+    ('On The Way', 'On The Way'),
+    ('Delivered', 'Delivered'),
+    ('Cancelled', 'Cancelled'),
+    ('Pending', 'Pending'),
+}
 
 class Product(models.Model):
     title = models.CharField(max_length=100)
@@ -45,6 +53,7 @@ class Customer(models.Model):
     mobile = models.IntegerField(default=0)
     zipcode = models.IntegerField()
     state = models.CharField(choices=STATE_CHOICES, max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return self.name
@@ -59,48 +68,25 @@ class Cart(models.Model):
     def total_cost(self):
         return self.quantity * self.product.discounted_price
 
-STATUS_CHOICES = {
-    ('Accepted', 'Accepted'),
-    ('Packed', 'Packed'),
-    ('On The Way', 'On The Way'),
-    ('Delivered', 'Delivered'),
-    ('Cancelled', 'Cancelled'),
-    ('Pending', 'Pending'),
-}
 
 
-class Payment(models.Model):
+
+class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    amount=models.FloatField()
-    razorpay_order_id=models.CharField(max_length=100, blank=True, null=True)
-    razorpay_payment_status = models.CharField(max_length=100, blank=True, null=True)
-    razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
-    paid = models.BooleanField(default=False)
-    
-
-
-
-class OrderPlaced(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    is_paid = models.BooleanField(default=False)
+    customer = models.ForeignKey(Customer, on_delete =models.CASCADE)
+    amount = models.DecimalField(max_digits=50, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-    order_date = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pending')
-    payment = models.ForeignKey(Payment, on_delete=models.CASCADE, default="")
 
     def __str__(self):
-        return f'Order {self.id} - {self.payment.amount} - {self.customer.mobile}'
+        return f'Order {self.id} - {self.amount} - {self.customer.mobile}'
 
-    def change_status(self, payed):
-        self.payed = payed
+    def change_status(self, is_paid):
+        self.is_paid = is_paid
 
     def get_payment_url(self, return_url: str) -> str:
-        return ClickUz.generate_url(self.id, self.payment.amount, return_url)
-    
-    @property
-    def total_cost(self):
-        return self.quantity * self.product.discounted_price
+        return ClickUz.generate_url(self.id, self.amount, return_url)
 
 class Wishlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

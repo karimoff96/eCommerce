@@ -42,21 +42,23 @@ Checkout
                     </div>
                 </div>
                 <div class="form-check mt-2 mb-5">
-                    <input type="radio" class="form-check-input" name="custid" id="custadd{{forloop.counter}}" value="{{ad.id}}">
+                    <input type="radio" class="form-check-input" name="custid" id="custadd{{forloop.counter}}" value="{{ad.id}}" checked>
                     <label for="custadd{{forloop.counter}}" class="form-check-label">Address: {{forloop.counter}}</label>
                 </div>
                 {% endfor %}
                 <div class="form-check mb-3">
                     <label for="totamount" class="form-label">Total Amount</label>
                     <input type="number" class="form-control" name="totamount" value="{{totalamount}}" readonly>
+                    <input type="text" id="currUrl" name="curr_url" value="" hidden>
                 </div>
                 <div class="text-end">
-                    {% comment %} <button type="submit" class="btn btn-warning mt-3 px-5 fw-bold">Continue</button> {% endcomment %}
-                    {% comment %} <div id="paypal-button-container"></div> {% endcomment %} 
                     <button id='rzp-button1' type="submit" class="btn btn-warning mt-3 px-5 fw-bold">Payment</button>
                 </div>
                 <br><br>
             </form>
+            <script>
+                document.getElementById('currUrl').value = window.location.origin + '/orders'
+            </script>
         </div>
     </div>
 </div>
